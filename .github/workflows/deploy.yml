@@ -1,0 +1,28 @@
+name: deploy.yml
+
+on: 
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    concurrency: ci-${{github.ref}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '24.11.1'
+      - name: Install
+        run: npm install
+      - name: Build
+        run: npx ng build --base-href=/kigard-planner/ --configuration=production
+      - name: Create 404
+        run: cp dist/kigard-planner/browser/index.html dist/kigard-planner/browser/404.html
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist/kigard-planner/browser
+          branch: gh-pages
