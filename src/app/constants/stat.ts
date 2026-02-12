@@ -1,0 +1,27 @@
+import { StatDetails } from "../types/stat";
+
+export const STAT_DETAILS: StatDetails = {
+  strength: { fullName: 'Force', shortName: 'STR' },
+  dexterity: { fullName: 'Dextérité', shortName: 'DEX' },
+  intelligence: { fullName: 'Intelligence', shortName: 'INT' },
+  constitution: { fullName: 'Constitution', shortName: 'CON' },
+  spirit: { fullName: 'Esprit', shortName: 'ESP' },
+  charisma: { fullName: 'Charisme', shortName: 'CHA' },
+  precision: { fullName: 'Précision', shortName: 'PRE', showAsPercent: true },
+  evasion: { fullName: 'Esquive', shortName: 'ESQ', showAsPercent: true },
+  magicMastery: { fullName: 'Maîtrise magique', shortName: 'MM', showAsPercent: true },
+  magicDefense: { fullName: 'Défense magique', shortName: 'DM', showAsPercent: true },
+  observation: { fullName: 'Observation', shortName: 'OBS', showAsPercent: true },
+  stealth: { fullName: 'Discrétion', shortName: 'DIS', showAsPercent: true },
+  healthPoints: { fullName: 'Points de vie', shortName: 'PV' },
+  healthRegen: { fullName: 'Régénération PV', shortName: 'REG PV' },
+  magicPoints: { fullName: 'Points de magie', shortName: 'PM' },
+  magicRegen: { fullName: 'Régénération PM', shortName: 'REG PM' },
+  damage: { fullName: 'Dégâts', shortName: 'DGT' },
+  magicDamage: { fullName: 'Puissance magique', shortName: 'MAG' },
+  armor: { fullName: 'Armure', shortName: 'ARM' },
+  resistance: { fullName: 'Résistance', shortName: 'RES' },
+  empathy: { fullName: 'Empathie', shortName: 'EMP' },
+  memory: { fullName: 'Mémoire', shortName: 'MEM' },
+  luck: { fullName: 'Bonus PA', shortName: 'LCK' },
+};

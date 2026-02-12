@@ -1,12 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { RaceSelectorComponent } from "./components/race-selector.component";
+import { RaceSelectorComponent } from './components/race-selector.component';
 import { PlannerService } from './services/planner.service';
 import { JsonPipe } from '@angular/common';
+import { StatSelectorComponent } from './components/stat-selector.component';
+import { GiftSelectorComponent } from './components/gift-selector.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RaceSelectorComponent, JsonPipe],
+  imports: [RaceSelectorComponent, JsonPipe, StatSelectorComponent, GiftSelectorComponent],
   template: `
     <header class="header">
       <h1>Kigard planner</h1>
@@ -14,12 +16,22 @@ import { JsonPipe } from '@angular/common';
     </header>
     <main class="planner">
       <div class="planner__main">
-        <race-selector />
+        <div class="planner__section">
+          <race-selector />
+        </div>
+        <div class="planner__section">
+          <stat-selector />
+        </div>
+        <div class="planner__section">
+          <gift-selector />
+        </div>
       </div>
       <div class="planner__side">
-        <pre>        
-          {{ plannerService.getState() | json }}
-        </pre>
+        <pre>
+        
+          {{ plannerService.getStateForDebug() | json }}
+        </pre
+        >
       </div>
     </main>
   `,
@@ -50,6 +62,14 @@ import { JsonPipe } from '@angular/common';
         }
 
         &__side {
+        }
+
+        &__section {
+          padding: 8px;
+
+          &:nth-child(odd) {
+            background-color: #cccccce0;
+          }
         }
       }
     `,

@@ -1,8 +1,9 @@
-import { Race } from "./race";
-import { PrimaryStats, PrimaryStatUpgrades } from "./stat";
+import { PrimaryStatUpgrades } from "./stat";
+
+export type SelectedGifts = Record<string, string[]>;
 
 export type PlannerState = {
-    race: Race;
-    stats: PrimaryStats;
+    raceId: string;
     upgrades: PrimaryStatUpgrades;
+    selectedGifts: SelectedGifts;
 }

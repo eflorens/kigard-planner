@@ -6,14 +6,21 @@ import { RACES } from '../constants/race';
 @Component({
   selector: 'race-selector',
   imports: [FormsModule],
+  styles: `
+    label {
+      display: block;
+    }
+  `,
   template: `
+    <label for="race-selector">Choisir une race</label>
     <select
-      [ngModel]="plannerService.race()"
+      name="race-selector"
+      [ngModel]="plannerService.race().id"
       (ngModelChange)="plannerService.setRace($event)"
       placeholder="Sélectionnez une race"
     >
-      @for (race of RACES; track race.name) {
-        <option [ngValue]="race">{{ race.name }}</option>
+      @for (race of RACES; track race.id) {
+        <option [ngValue]="race.id">{{ race.name }}</option>
       }
     </select>
   `,
