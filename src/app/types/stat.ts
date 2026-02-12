@@ -48,3 +48,15 @@ export type StatDetails = {
 export type PrimaryStatUpgrades = {
   [K in PrimaryStatKey]: number;
 };
+
+export type StatUpgradeSummary = {
+  key: PrimaryStatKey;
+  baseValue: number;
+  upgradeBonus: number;
+  upgradeLevel: number;
+  totalValue: number;
+  nextUpgradeCost: number;
+  totalUpgradeCost: number;
+  canUpgrade: boolean;
+  canDowngrade: boolean;
+}

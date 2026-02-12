@@ -1,6 +1,7 @@
 import { RangeInterval } from "./utils";
 
 export type Race = {
+  id: string;
   name: string;
   racialGifts: RacialGift[];
 }
