@@ -1,8 +1,8 @@
-import { computed, effect, Injectable, Signal, signal, untracked } from "@angular/core";
-import { PlannerState, SelectedGifts } from "../types/planner";
+import { computed, Injectable, linkedSignal, Signal, signal } from "@angular/core";
+import { SelectedGifts } from "../types/planner";
 import { DEFAULT_STATS, getDefaultStatUpgrades } from "../constants/utils";
 import { Race } from "../types/race";
-import { PrimaryStatKey, PrimaryStats, PrimaryStatUpgrades, StatUpgradeSummary } from "../types/stat";
+import { PrimaryStatKey, PrimaryStats, PrimaryStatUpgrades, StatUpgradeSummary } from "../types/statistic";
 import { STAT_DETAILS } from "../constants/stat";
 import { RACES } from "../constants/race";
 
@@ -10,24 +10,15 @@ import { RACES } from "../constants/race";
     providedIn: 'root'
 })
 export class PlannerService {
-    private state = signal<PlannerState>({
-        raceId: RACES[Math.floor(Math.random() * RACES.length)].id,
-        upgrades: getDefaultStatUpgrades(),
-        selectedGifts: {},
+    private raceId = signal<string>(RACES[Math.floor(Math.random() * RACES.length)].id);
+    public upgrades = signal<PrimaryStatUpgrades>(getDefaultStatUpgrades());
+    private selectedGifts = linkedSignal<string, SelectedGifts>({
+        source: this.raceId,
+        computation: () => ({}),
     });
 
-    constructor() {
-      effect(() => {
-        const validated = this.validatedGifts();
-        untracked(() => {
-          this.state.update(state => ({...state, selectedGifts: validated}));
-        });
-      });
-    }
-
-  public race: Signal<Race> = computed(() => RACES.find(r => r.id === this.state().raceId)!);
+  public race: Signal<Race> = computed(() => RACES.find(r => r.id === this.raceId())!);
   public stats: Signal<PrimaryStats> = computed(() => DEFAULT_STATS);
-  public upgrades: Signal<PrimaryStatUpgrades> = computed(() => this.state().upgrades);
 
   public MAX_EXPERIENCE = 10000;
   public MAX_UPGRADES = 10;
@@ -51,8 +42,7 @@ export class PlannerService {
         totalValue: (upgradeIncrement * upgradeLevel) + stats[statKey],
         nextUpgradeCost: 50 + (upgradeLevel * 50),
         totalUpgradeCost: totalUpgradeCost(upgradeLevel),
-        canUpgrade: upgradeLevel < this.MAX_UPGRADES
-          && (this.experience() + 50 + (upgradeLevel * 50)) <= this.MAX_EXPERIENCE,
+        canUpgrade: upgradeLevel < this.MAX_UPGRADES,
         canDowngrade: upgradeLevel > 0
       };
     });
@@ -79,7 +69,7 @@ export class PlannerService {
   });
 
   public validatedGifts: Signal<SelectedGifts> = computed(() => {
-    const selected = this.state().selectedGifts;
+    const selected = this.selectedGifts();
     const gifts = this.race().racialGifts;
     const budget = this.racialGiftsPoints();
 
@@ -129,12 +119,16 @@ export class PlannerService {
     return this.racialGiftsPoints() - this.spentGiftPoints();
   });
 
-  public setRace(raceId: string): void {
-    this.state.update(state => ({...state, raceId, selectedGifts: {}}));
+  public getStateForDebug() {
+    return {
+      raceId: this.raceId(),
+      upgrades: this.upgrades(),
+      selectedGifts: this.selectedGifts(),
+    };
   }
 
-  public getStateForDebug(): PlannerState {
-    return this.state();
+  public setRace(raceId: string): void {
+    this.raceId.set(raceId);
   }
 
   public increaseStat(statKey: PrimaryStatKey): void {
@@ -148,12 +142,9 @@ export class PlannerService {
       return;
     }
 
-    this.state.update(state => ({
-      ...state,
-      upgrades: {
-        ...state.upgrades,
-        [statKey]: numberOfUpgrades + 1
-      }
+    this.upgrades.update(upgrades => ({
+      ...upgrades,
+      [statKey]: numberOfUpgrades + 1
     }));
   }
 
@@ -164,12 +155,9 @@ export class PlannerService {
       return;
     }
 
-    this.state.update(state => ({
-      ...state,
-      upgrades: {
-        ...state.upgrades,
-        [statKey]: numberOfUpgrades - 1
-      }
+    this.upgrades.update(upgrades => ({
+      ...upgrades,
+      [statKey]: numberOfUpgrades - 1
     }));
   }
 
@@ -177,18 +165,15 @@ export class PlannerService {
     const validated = this.validatedGifts();
 
     if (giftId in validated) {
-      const { [giftId]: _, ...rest } = this.state().selectedGifts;
-      this.state.update(state => ({...state, selectedGifts: rest}));
+      const { [giftId]: _, ...rest } = this.selectedGifts();
+      this.selectedGifts.set(rest);
       return;
     }
 
     const gift = this.race().racialGifts.find(g => g.id === giftId);
     if (!gift || this.availableGiftPoints() < gift.unlockCost) return;
 
-    this.state.update(state => ({
-      ...state,
-      selectedGifts: {...state.selectedGifts, [giftId]: []}
-    }));
+    this.selectedGifts.update(gifts => ({...gifts, [giftId]: []}));
   }
 
   public toggleUpgrade(giftId: string, upgradeId: string): void {
@@ -198,12 +183,9 @@ export class PlannerService {
     const upgradeIds = validated[giftId];
 
     if (upgradeIds.includes(upgradeId)) {
-      this.state.update(state => ({
-        ...state,
-        selectedGifts: {
-          ...state.selectedGifts,
-          [giftId]: state.selectedGifts[giftId].filter(id => id !== upgradeId)
-        }
+      this.selectedGifts.update(gifts => ({
+        ...gifts,
+        [giftId]: gifts[giftId].filter(id => id !== upgradeId)
       }));
       return;
     }
@@ -212,12 +194,9 @@ export class PlannerService {
     const upgrade = gift?.giftUpgrades?.find(u => u.id === upgradeId);
     if (!upgrade || this.availableGiftPoints() < upgrade.unlockCost) return;
 
-    this.state.update(state => ({
-      ...state,
-      selectedGifts: {
-        ...state.selectedGifts,
-        [giftId]: [...state.selectedGifts[giftId], upgradeId]
-      }
+    this.selectedGifts.update(gifts => ({
+      ...gifts,
+      [giftId]: [...gifts[giftId], upgradeId]
     }));
   }
 }

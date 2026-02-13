@@ -1,4 +1,4 @@
-import { StatDetails } from "../types/stat";
+import { StatDetails } from "../types/statistic";
 
 export const STAT_DETAILS: StatDetails = {
   strength: { fullName: 'Force', shortName: 'STR' },

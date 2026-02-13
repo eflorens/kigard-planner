@@ -1,8 +1,8 @@
 import { Race } from '../types/race';
-import { ELF_RACIAL_GIFTS } from './racial-gifts/elf-racial-gifts';
-import { GNOME_RACIAL_GIFTS } from './racial-gifts/gnome-racial-gifts';
-import { HUMAN_RACIAL_GIFTS } from './racial-gifts/human-racial-gifts';
-import { ORC_RACIAL_GIFTS } from './racial-gifts/orc-racial-gifts';
+import { ELF_RACIAL_GIFTS } from './gifts/elf';
+import { GNOME_RACIAL_GIFTS } from './gifts/gnome';
+import { HUMAN_RACIAL_GIFTS } from './gifts/human';
+import { ORC_RACIAL_GIFTS } from './gifts/orc';
 
 export const RACES: Race[] = [
   {

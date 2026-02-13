@@ -1,4 +1,5 @@
-import { StatBonus } from "./stat";
+import { ElementalResistance } from "./element";
+import { StatBonus } from "./statistic";
 
 export enum ArmorCategory {
     HELMET = 'Casque',
@@ -15,5 +16,5 @@ export type Armor = {
     weight: number;
     bonuses?: StatBonus[];
     extraGem?: boolean;
-    // resistances?: ElementalResistance[];
+    resistances?: ElementalResistance[];
 }
