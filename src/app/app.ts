@@ -5,10 +5,11 @@ import { PlannerService } from './services/planner.service';
 import { JsonPipe } from '@angular/common';
 import { StatSelectorComponent } from './components/stat-selector.component';
 import { GiftSelectorComponent } from './components/gift-selector.component';
+import { ArmorSelectorComponent } from './components/armor-selector.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RaceSelectorComponent, JsonPipe, StatSelectorComponent, GiftSelectorComponent],
+  imports: [RaceSelectorComponent, JsonPipe, StatSelectorComponent, GiftSelectorComponent, ArmorSelectorComponent],
   template: `
     <header class="header">
       <h1>Kigard planner</h1>
@@ -24,6 +25,9 @@ import { GiftSelectorComponent } from './components/gift-selector.component';
         </div>
         <div class="planner__section">
           <gift-selector />
+        </div>
+        <div class="planner__section">
+          <armor-selector />
         </div>
       </div>
       <div class="planner__side">
