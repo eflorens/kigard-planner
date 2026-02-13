@@ -1,4 +1,4 @@
-import { PrimaryStatUpgrades, PrimaryStats } from "../types/stat";
+import { PrimaryStatUpgrades, PrimaryStats } from "../types/statistic";
 
 export const DEFAULT_STATS: PrimaryStats = {
   strength: 10,
