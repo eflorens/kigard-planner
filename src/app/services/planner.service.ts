@@ -5,6 +5,15 @@ import { Race } from "../types/race";
 import { PrimaryStatKey, PrimaryStats, PrimaryStatUpgrades, StatUpgradeSummary } from "../types/statistic";
 import { STAT_DETAILS } from "../constants/stat";
 import { RACES } from "../constants/race";
+import { Armor, ArmorSlotKey } from "../types/armor";
+import { HELMETS } from "../constants/armors/helmet";
+import { CHESTPLATES } from "../constants/armors/chestplate";
+import { BOOTS } from "../constants/armors/boot";
+import { JEWELRY } from "../constants/armors/jewelry";
+
+const ARMOR_LOOKUP: Map<number, Armor> = new Map(
+  [...HELMETS, ...CHESTPLATES, ...BOOTS, ...JEWELRY].map(a => [a.id, a])
+);
 
 @Injectable({
     providedIn: 'root'
@@ -12,11 +21,21 @@ import { RACES } from "../constants/race";
 export class PlannerService {
     private raceId = signal<string>(RACES[Math.floor(Math.random() * RACES.length)].id);
     public upgrades = signal<PrimaryStatUpgrades>(getDefaultStatUpgrades());
+    private equippedArmor = signal<Partial<Record<ArmorSlotKey, number>>>({});
     private selectedGifts = linkedSignal<string, SelectedGifts>({
         source: this.raceId,
         computation: () => ({}),
     });
 
+  public equipment = computed(() => {
+    const ids = this.equippedArmor();
+    const resolved: Partial<Record<ArmorSlotKey, Armor>> = {};
+    for (const slot in ids) {
+      const armor = ARMOR_LOOKUP.get(ids[slot as ArmorSlotKey]!);
+      if (armor) resolved[slot as ArmorSlotKey] = armor;
+    }
+    return resolved;
+  });
   public race: Signal<Race> = computed(() => RACES.find(r => r.id === this.raceId())!);
   public stats: Signal<PrimaryStats> = computed(() => DEFAULT_STATS);
 
@@ -124,6 +143,7 @@ export class PlannerService {
       raceId: this.raceId(),
       upgrades: this.upgrades(),
       selectedGifts: this.selectedGifts(),
+      equippedArmor: this.equippedArmor(),
     };
   }
 
@@ -174,6 +194,17 @@ export class PlannerService {
     if (!gift || this.availableGiftPoints() < gift.unlockCost) return;
 
     this.selectedGifts.update(gifts => ({...gifts, [giftId]: []}));
+  }
+
+  public equipArmor(slot: ArmorSlotKey, armorId: number): void {
+    this.equippedArmor.update(eq => ({ ...eq, [slot]: armorId }));
+  }
+
+  public unequipArmor(slot: ArmorSlotKey): void {
+    this.equippedArmor.update(eq => {
+      const { [slot]: _, ...rest } = eq;
+      return rest;
+    });
   }
 
   public toggleUpgrade(giftId: string, upgradeId: string): void {

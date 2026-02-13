@@ -18,3 +18,5 @@ export type Armor = {
     extraGem?: boolean;
     resistances?: ElementalResistance[];
 }
+
+export type ArmorSlotKey = keyof typeof ArmorCategory;
